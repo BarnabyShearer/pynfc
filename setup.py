@@ -12,7 +12,7 @@ setup(
     long_description=long_description,
     author="Barnaby Shearer",
     author_email="b@Zi.iS",
-    url="https://github.com:BarnabyShearer/pynfc.git",
+    url="https://github.com/BarnabyShearer/pynfc.git",
     license='BSD',
     keywords="RFID NFC Mifare Desfire",
     packages=[
