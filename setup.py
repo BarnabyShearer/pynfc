@@ -7,7 +7,7 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'README.rst'), encodin
 
 setup(
     name="pynfc",
-    version="0.0.1",
+    version="0.0.2",
     description="`ctypeslib` converted libnfc and libfreefare",
     long_description=long_description,
     author="Barnaby Shearer",

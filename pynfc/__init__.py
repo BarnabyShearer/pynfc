@@ -101,8 +101,12 @@ class Desfire(Target):
     def auth(self, key, keyno=0):
         if desfire_connect(self.target) != 0:
             return False
-        key = (ctypes.c_ubyte * 8)(*bytearray(key))
-        desfire_key = freefare.mifare_desfire_des_key_new_with_version(key);
+        if len(key) == 8:
+            key = (ctypes.c_ubyte * 8)(*bytearray(key))
+            desfire_key = freefare.mifare_desfire_des_key_new_with_version(key);
+        else:
+            key = (ctypes.c_ubyte * 16)(*bytearray(key))
+            desfire_key = freefare.mifare_desfire_aes_key_new_with_version(key, 1);
         ret = desfire_auth(self.target, keyno, desfire_key)
         freefare.mifare_desfire_key_free(desfire_key)
         return ret == 0
