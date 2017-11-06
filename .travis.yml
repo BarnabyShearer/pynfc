@@ -8,7 +8,14 @@ python:
 - pypy3
 before_install:
 - sudo apt-get -qq update
-- sudo apt install -y libnfc-dev libfreefare-dev
+- sudo apt install -y libnfc-dev autoconf automake git libtool libssl-dev pkg-config
+- git clone https://github.com/nfc-tools/libfreefare.git
+- cd libfreefare
+- git checkout libfreefare-0.4.0
+- autoreconf -vis
+- ./configure --prefix=/usr
+- make
+- sudo make install
 script: make test
 deploy:
   provider: pypi
