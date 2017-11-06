@@ -16,6 +16,7 @@ before_install:
 - ./configure --prefix=/usr
 - make
 - sudo make install
+- cd ..
 script: make test
 deploy:
   provider: pypi
