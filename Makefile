@@ -12,4 +12,4 @@ clean:
 	-rm pynfc/*.xml $(GENPY)
 
 test:
-	pytest --pylint --doctest-modules --ignore=setup.py $(addprefix --ignore=,$(GENPY))
+	py.test --pylint --doctest-modules --ignore=setup.py $(addprefix --ignore=,$(GENPY))
