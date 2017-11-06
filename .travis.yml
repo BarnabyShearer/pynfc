@@ -4,8 +4,6 @@ python:
 - '3.3'
 - '3.5'
 - '3.6'
-- pypy
-- pypy3
 before_install:
 - sudo apt-get -qq update
 - sudo apt install -y libnfc-dev autoconf automake git libtool libssl-dev pkg-config gccxml python-ctypeslib
