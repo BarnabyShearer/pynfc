@@ -11,5 +11,5 @@ pynfc/%.py: pynfc/%.xml
 clean:
 	-rm pynfc/*.xml $(GENPY)
 
-test:
+test: all
 	py.test --pylint --doctest-modules --ignore=setup.py $(addprefix --ignore=,$(GENPY))
