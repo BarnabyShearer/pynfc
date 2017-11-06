@@ -3,7 +3,7 @@ GENPY=$(subst .c,.py,$(wildcard pynfc/*.c))
 all: $(GENPY)
 
 pynfc/%.xml: pynfc/%.c
-	gccxml.real $+ -fxml=$@
+	$(shell which gccxml.real gccxml | head -n1) $+ -fxml=$@
 
 pynfc/%.py: pynfc/%.xml
 	xml2py -k defst -l libnfc.so -l libfreefare.so -v $+ -o $@
