@@ -1,3 +1,6 @@
+sudo: required
+services:
+  - docker
 language: python
 python:
 - '2.7'
@@ -7,9 +10,9 @@ python:
 - pypy
 - pypy3
 before_install:
-- sudo apt-get -qq update
-- sudo apt install -y libnfc-dev libfreefare-dev
-script: make test
+- docker pull ubuntu:xenial
+script:
+- docker run -v /home:/home ubuntu:xenial /bin/bash -c "cd /home; apt-get -qq update; apt install -y libnfc-dev libfreefare-dev; make test"
 deploy:
   provider: pypi
   user: BarnabyShearer
