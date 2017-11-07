@@ -19,6 +19,6 @@ pynfc
     
     for target in n.poll():
         try:
-            print(target.id, target.auth(DESFIRE_DEFAULT_KEY if type(target) == Desfire else MIFARE_BLANK_TOKEN))
+            print(target.uid, target.auth(DESFIRE_DEFAULT_KEY if type(target) == Desfire else MIFARE_BLANK_TOKEN))
         except Timeout:
             pass

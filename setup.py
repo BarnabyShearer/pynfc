@@ -7,7 +7,7 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'README.rst')) as f:
 
 setup(
     name="pynfc",
-    version="0.0.3",
+    version="0.0.4",
     description="`ctypeslib` converted libnfc and libfreefare",
     long_description=long_description,
     author="Barnaby Shearer",
@@ -19,13 +19,10 @@ setup(
         "pynfc"
     ],
     classifiers=[
-        "Development Status :: 4 - Beta",
-        "Environment :: Web Environment",
+        "Development Status :: 5 - Production/Stable",
+        "Environment :: Console",
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 3"
-    ],
-    install_requires=[
-        "psutil"
     ]
 )
