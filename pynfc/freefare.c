@@ -1,5 +1,3 @@
-#include <openssl/des.h>
-
 //HACK: ctypelib2 dosn't like enums
 struct mifare_tag;
 typedef struct mifare_tag *MifareTag;

@@ -2,9 +2,7 @@ dist: xenial
 language: python
 python:
 - '2.7'
-- '3.3'
-- '3.5'
-- '3.6'
+- '3.7'
 before_install:
 - sudo apt-get -qq update
 - sudo apt install -y libssl-dev libnfc-dev libfreefare-dev libclang-5.0-dev
