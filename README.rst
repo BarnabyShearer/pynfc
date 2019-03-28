@@ -5,7 +5,7 @@ pynfc
 
 ::
 
-    sudo apt install libfreefare0
+    sudo apt install libfreefare-dev
     pip install pynfc
 
 ::
