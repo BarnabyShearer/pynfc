@@ -15,7 +15,7 @@ except ImportError:
     import Queue as queue
 import threading
 import ctypes
-from . import nfc, freefare, mifare
+from . import nfc
 
 class TimeoutException(Exception):
     """Timeout Exception"""
@@ -47,11 +47,11 @@ class Timeout(object):
         return wrapped_f
 
 poll = Timeout(None)(nfc.nfc_initiator_poll_target) #pylint: disable-msg=invalid-name
-get_tags = Timeout()(freefare.freefare_get_tags) #pylint: disable-msg=invalid-name
-desfire_connect = Timeout()(freefare.mifare_desfire_connect) #pylint: disable-msg=invalid-name
-desfire_auth = Timeout()(freefare.mifare_desfire_authenticate) #pylint: disable-msg=invalid-name
-classic_connect = Timeout()(freefare.mifare_classic_connect) #pylint: disable-msg=invalid-name
-classic_auth = Timeout()(freefare.mifare_classic_authenticate) #pylint: disable-msg=invalid-name
+get_tags = Timeout()(nfc.freefare_get_tags) #pylint: disable-msg=invalid-name
+desfire_connect = Timeout()(nfc.mifare_desfire_connect) #pylint: disable-msg=invalid-name
+desfire_auth = Timeout()(nfc.mifare_desfire_authenticate) #pylint: disable-msg=invalid-name
+classic_connect = Timeout()(nfc.mifare_classic_connect) #pylint: disable-msg=invalid-name
+classic_auth = Timeout()(nfc.mifare_classic_authenticate) #pylint: disable-msg=invalid-name
 
 class Nfc(object):
     """A slightly pythonic interface"""
@@ -69,6 +69,7 @@ class Nfc(object):
         nfc.nfc_init(ctypes.byref(self.pctx)) #Mallocs the ctx
         if not self.pctx:
             raise Exception("Couldn't nfc_init (malloc?)")
+        nfc.nfc_open.argtypes = [ctypes.POINTER(nfc.struct_nfc_context), ctypes.POINTER(ctypes.c_char)]
         self.pdevice = nfc.nfc_open(self.pctx, None)
         if not self.pdevice:
             raise Exception("Couldn't nfc_open (comms?)")
@@ -99,12 +100,12 @@ class Nfc(object):
             if not ptarget:
                 continue
             ret = Target(ptarget)
-            if ret.type == freefare.DESFIRE:
+            if ret.type == nfc.DESFIRE:
                 ret = Desfire(ptarget)
-            elif ret.type == freefare.CLASSIC_1K or ret.type == freefare.CLASSIC_4K:
+            elif ret.type == nfc.CLASSIC_1K or ret.type == nfc.CLASSIC_4K:
                 ret = Mifare(ptarget)
             yield ret
-            freefare.freefare_free_tags(ptarget)
+            nfc.freefare_free_tags(ptarget)
 
     def __del__(self):
         """Terminate comms with reader cleanly"""
@@ -126,12 +127,12 @@ class Target(object):
         (can vary in length based on type)
         (do not rely on them being absolutly unique)
         """
-        return freefare.freefare_get_tag_uid(self.target).decode('ascii')
+        return nfc.freefare_get_tag_uid(self.target).decode('ascii')
 
     @property
     def type(self):
         """Type of this device"""
-        return freefare.freefare_get_tag_type(self.target)
+        return nfc.freefare_get_tag_type(self.target)
 
 class Desfire(Target):
     """Specilise for DesFire devices"""
@@ -142,12 +143,12 @@ class Desfire(Target):
             return False
         if len(key) == 8:
             key = (ctypes.c_ubyte * 8)(*bytearray(key))
-            desfire_key = freefare.mifare_desfire_des_key_new_with_version(key)
+            desfire_key = nfc.mifare_desfire_des_key_new_with_version(key)
         else:
             key = (ctypes.c_ubyte * 16)(*bytearray(key))
-            desfire_key = freefare.mifare_desfire_aes_key_new_with_version(key, 1)
+            desfire_key = nfc.mifare_desfire_aes_key_new_with_version(key, 1)
         ret = desfire_auth(self.target, keyno, desfire_key)
-        freefare.mifare_desfire_key_free(desfire_key)
+        nfc.mifare_desfire_key_free(desfire_key)
         return ret == 0
 
 class Mifare(Target):
@@ -157,20 +158,20 @@ class Mifare(Target):
         """Authenticate"""
         if classic_connect(self.target) != 0:
             return False
-        block = freefare.mifare_classic_sector_last_block(sector)
-        auth_tag = mifare.mifare_classic_tag.from_buffer_copy(data)
+        block = nfc.mifare_classic_sector_last_block(sector)
+        auth_tag = nfc.mifare_classic_tag.from_buffer_copy(data)
         if akey:
             ret = classic_auth(
                 self.target,
                 block,
                 auth_tag.amb[block].mbt.abtKeyA,
-                freefare.MFC_KEY_A
+                nfc.MFC_KEY_A
             )
         else:
             ret = classic_auth(
                 self.target,
                 block,
                 auth_tag.amb[block].mbt.abtKeyB,
-                freefare.MFC_KEY_B
+                nfc.MFC_KEY_B
             )
         return ret == 0

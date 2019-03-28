@@ -56,3 +56,6 @@ struct nfc_device {
   /** Last reported error */
   int     last_error;
 };
+
+#include "freefare.c"
+#include "mifare.c"
