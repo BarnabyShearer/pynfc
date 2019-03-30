@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+from __future__ import print_function
 import ctypes
 import sys
 
@@ -16,7 +17,7 @@ class MyGenerator(Generator):
         if isinstance(t, typedesc.PointerType):
             return "ctypes.POINTER(%s)" % (self.type_name(t.typ, generate))
         else:
-            return super().type_name(t, generate)
+            return super(MyGenerator, self).type_name(t, generate)
 
     def Typedef(self, tp):
         """
@@ -30,11 +31,11 @@ class MyGenerator(Generator):
         name = self.type_name(tp)  # tp.name
         if (isinstance(tp.typ, typedesc.FundamentalType) and
                 tp.name in sized_types):
-            print("%s = ctypes.%s" % \
+            print(u"%s = ctypes.%s" % \
                 (name, sized_types[tp.name]), file=self.stream)
             self.names.add(tp.name)
             return
-        return super().Typedef(tp)
+        return super(MyGenerator, self).Typedef(tp)
 
 def main(files):
     parser = clangparser.Clang_Parser(('-I/usr/include/clang/5.0/include/',))
