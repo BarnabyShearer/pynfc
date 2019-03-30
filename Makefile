@@ -1,7 +1,7 @@
 all: pynfc/nfc.py
 
-pynfc/nfc.py: pynfc/*.c
-	clang2py --clang-args='-I/usr/include/clang/5.0/include/' -i -k defst -l libnfc.so -l libfreefare.so  pynfc/nfc.c -o $@
+pynfc/nfc.py: pynfc/nfc.c pynfc/freefare.c pynfc/mifare.c
+	./gen.py $+ > $@
 
 clean:
 	-rm pynfc/nfc.py
