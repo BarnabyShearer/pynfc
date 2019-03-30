@@ -7,7 +7,7 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'README.rst')) as f:
 
 setup(
     name="pynfc",
-    version="0.1.0",
+    version="0.1.1",
     description="`ctypeslib` converted libnfc and libfreefare",
     long_description=long_description,
     author="Barnaby Shearer",
