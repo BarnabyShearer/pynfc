@@ -1,4 +1,8 @@
-#include <openssl/des.h>
+//HACK: ctypelib2 dosn't like enums
+struct mifare_tag;
+typedef struct mifare_tag *MifareTag;
+int freefare_get_tag_type (MifareTag tag);
+
 #include "freefare.h"
 
 //HACK: We also need some of the interals:
@@ -57,14 +61,16 @@ struct mifare_desfire_aid {
     uint8_t data[3];
 };
 
+enum mifare_desfire_key_type {
+    T_DES,
+    T_3DES,
+    T_3K3DES,
+    T_AES
+};
+
 struct mifare_desfire_key {
     uint8_t data[24];
-    enum {
-	T_DES,
-	T_3DES,
-	T_3K3DES,
-	T_AES
-    } type;
+    enum mifare_desfire_key_type type;
     DES_key_schedule ks1;
     DES_key_schedule ks2;
     DES_key_schedule ks3;
@@ -73,6 +79,10 @@ struct mifare_desfire_key {
     uint8_t aes_version;
 };
 
+enum mifare_desfire_tag_authentication_scheme {
+    AS_LEGACY,
+    AS_NEW
+};
 struct mifare_desfire_tag {
     struct mifare_tag __tag;
 
@@ -80,7 +90,7 @@ struct mifare_desfire_tag {
     uint8_t last_internal_error;
     uint8_t last_pcd_error;
     MifareDESFireKey session_key;
-    enum { AS_LEGACY, AS_NEW } authentication_scheme;
+    enum mifare_desfire_tag_authentication_scheme authentication_scheme;
     uint8_t authenticated_key_no;
     uint8_t ivect[MAX_CRYPTO_BLOCK_SIZE];
     uint8_t cmac[16];

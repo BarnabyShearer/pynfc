@@ -8,14 +8,16 @@ Traceback (most recent call last):
 Exception: Couldn't nfc_open (comms?)
 """
 
+import ctypes
 import os
+import threading
+
+from . import nfc
+
 try:
     import queue
 except ImportError:
     import Queue as queue
-import threading
-import ctypes
-from . import nfc, freefare, mifare
 
 class TimeoutException(Exception):
     """Timeout Exception"""
@@ -47,11 +49,11 @@ class Timeout(object):
         return wrapped_f
 
 poll = Timeout(None)(nfc.nfc_initiator_poll_target) #pylint: disable-msg=invalid-name
-get_tags = Timeout()(freefare.freefare_get_tags) #pylint: disable-msg=invalid-name
-desfire_connect = Timeout()(freefare.mifare_desfire_connect) #pylint: disable-msg=invalid-name
-desfire_auth = Timeout()(freefare.mifare_desfire_authenticate) #pylint: disable-msg=invalid-name
-classic_connect = Timeout()(freefare.mifare_classic_connect) #pylint: disable-msg=invalid-name
-classic_auth = Timeout()(freefare.mifare_classic_authenticate) #pylint: disable-msg=invalid-name
+tag_new = Timeout()(nfc.freefare_tag_new) #pylint: disable-msg=invalid-name
+desfire_connect = Timeout()(nfc.mifare_desfire_connect) #pylint: disable-msg=invalid-name
+desfire_auth = Timeout()(nfc.mifare_desfire_authenticate) #pylint: disable-msg=invalid-name
+classic_connect = Timeout()(nfc.mifare_classic_connect) #pylint: disable-msg=invalid-name
+classic_auth = Timeout()(nfc.mifare_classic_authenticate) #pylint: disable-msg=invalid-name
 
 class Nfc(object):
     """A slightly pythonic interface"""
@@ -65,46 +67,45 @@ class Nfc(object):
             os.environ["LIBNFC_LOG_LEVEL"] = str(log_level)
         if device is not None:
             os.environ["LIBNFC_DEFAULT_DEVICE"] = device
-        self.pctx = nfc.nfc_init.argtypes[0]._type_() #pylint: disable-msg=protected-access
-        nfc.nfc_init(ctypes.byref(self.pctx)) #Mallocs the ctx
+        self.pctx = ctypes.POINTER(nfc.struct_nfc_context)()
+        nfc.nfc_init(self.pctx) #Mallocs the ctx
         if not self.pctx:
             raise Exception("Couldn't nfc_init (malloc?)")
+        nfc.nfc_open.argtypes = [ctypes.POINTER(nfc.struct_nfc_context), ctypes.POINTER(ctypes.c_char)]
         self.pdevice = nfc.nfc_open(self.pctx, None)
         if not self.pdevice:
             raise Exception("Couldn't nfc_open (comms?)")
 
     def poll(self, modulations=((nfc.NMT_ISO14443A, nfc.NBR_424),), times=0xFF, delay=1):
         """Wait for device to enter field"""
-        #pylint: disable-msg=protected-access
         _modulations = (
-            nfc.nfc_initiator_poll_target.argtypes[1]._type_ * len(modulations)
+            nfc.nfc_modulation * len(modulations)
         )()
         for i, (nmt, nbr) in enumerate(modulations):
             _modulations[i].nmt = nmt
             _modulations[i].nbr = nbr
-        target = nfc.nfc_initiator_poll_target.argtypes[5]._type_()
+        target = nfc.nfc_target()
         while True:
             numdev = poll(
                 self.pdevice,
-                ctypes.byref(_modulations[0]),
+                _modulations,
                 len(_modulations),
                 times,
                 delay,
-                ctypes.byref(target)
+                target
             )
             if numdev <= 0:
                 return
-            #Freefare dosn't like nfc's target
-            ptarget = get_tags(self.pdevice).contents
+            ptarget = tag_new(self.pdevice, target.nti.nai)
             if not ptarget:
                 continue
             ret = Target(ptarget)
-            if ret.type == freefare.DESFIRE:
+            if ret.type == nfc.DESFIRE:
                 ret = Desfire(ptarget)
-            elif ret.type == freefare.CLASSIC_1K or ret.type == freefare.CLASSIC_4K:
+            elif ret.type == nfc.CLASSIC_1K or ret.type == nfc.CLASSIC_4K:
                 ret = Mifare(ptarget)
             yield ret
-            freefare.freefare_free_tags(ptarget)
+            nfc.freefare_free_tag(ptarget)
 
     def __del__(self):
         """Terminate comms with reader cleanly"""
@@ -126,12 +127,12 @@ class Target(object):
         (can vary in length based on type)
         (do not rely on them being absolutly unique)
         """
-        return freefare.freefare_get_tag_uid(self.target).decode('ascii')
+        return ctypes.string_at(nfc.freefare_get_tag_uid(self.target))
 
     @property
     def type(self):
         """Type of this device"""
-        return freefare.freefare_get_tag_type(self.target)
+        return nfc.freefare_get_tag_type(self.target)
 
 class Desfire(Target):
     """Specilise for DesFire devices"""
@@ -142,12 +143,12 @@ class Desfire(Target):
             return False
         if len(key) == 8:
             key = (ctypes.c_ubyte * 8)(*bytearray(key))
-            desfire_key = freefare.mifare_desfire_des_key_new_with_version(key)
+            desfire_key = nfc.mifare_desfire_des_key_new_with_version(key)
         else:
             key = (ctypes.c_ubyte * 16)(*bytearray(key))
-            desfire_key = freefare.mifare_desfire_aes_key_new_with_version(key, 1)
+            desfire_key = nfc.mifare_desfire_aes_key_new_with_version(key, 1)
         ret = desfire_auth(self.target, keyno, desfire_key)
-        freefare.mifare_desfire_key_free(desfire_key)
+        nfc.mifare_desfire_key_free(desfire_key)
         return ret == 0
 
 class Mifare(Target):
@@ -157,20 +158,20 @@ class Mifare(Target):
         """Authenticate"""
         if classic_connect(self.target) != 0:
             return False
-        block = freefare.mifare_classic_sector_last_block(sector)
-        auth_tag = mifare.mifare_classic_tag.from_buffer_copy(data)
+        block = nfc.mifare_classic_sector_last_block(sector)
+        auth_tag = nfc.mifare_classic_tag.from_buffer_copy(data)
         if akey:
             ret = classic_auth(
                 self.target,
                 block,
                 auth_tag.amb[block].mbt.abtKeyA,
-                freefare.MFC_KEY_A
+                nfc.MFC_KEY_A
             )
         else:
             ret = classic_auth(
                 self.target,
                 block,
                 auth_tag.amb[block].mbt.abtKeyB,
-                freefare.MFC_KEY_B
+                nfc.MFC_KEY_B
             )
         return ret == 0
