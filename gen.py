@@ -1,5 +1,6 @@
-#!/usr/bin/env python
 from __future__ import print_function
+
+import os
 import ctypes
 import sys
 
@@ -37,26 +38,27 @@ class MyGenerator(Generator):
             return
         return super(MyGenerator, self).Typedef(tp)
 
-def main(files):
+def run():
     parser = clangparser.Clang_Parser(('-I/usr/include/clang/5.0/include/',))
     parser.filter_location(
-        files + [
+        [
+            os.path.abspath('pynfc/nfc.c'),
+            os.path.abspath('pynfc/freefare.c'),
+            os.path.abspath('pynfc/mifare.c'),
             '/usr/include/freefare.h',
             '/usr/include/nfc/nfc-types.h',
             '/usr/include/nfc/nfc.h',
         ]
     )
-    parser.parse(files[0])
+    parser.parse(os.path.abspath('pynfc/nfc.c'))
     items = parser.get_result()
     items = [i for i in items if isinstance(i, (typedesc.Function, typedesc.Typedef))]
-    gen = MyGenerator(
-        sys.stdout,
-        searched_dlls=(
-            ctypes.CDLL('libfreefare.so'),
+    with open('pynfc/nfc.py', 'w') as out:
+        gen = MyGenerator(
+            out,
+            searched_dlls=(
+                ctypes.CDLL('libfreefare.so'),
+            )
         )
-    )
-    gen.generate_headers(parser)
-    gen.generate_code(items)
-
-if __name__ == "__main__":
-    main(sys.argv[1:])
+        gen.generate_headers(parser)
+        gen.generate_code(items)

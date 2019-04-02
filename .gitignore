@@ -1,9 +1,7 @@
 *.py[oc]
 /pynfc/nfc.py
-/pynfc/mifare.py
-/pynfc/freefare.py
-*.xml
 /build
 /dist
 *.egg-info
 /.cache
+/.eggs
