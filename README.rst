@@ -3,11 +3,15 @@ pynfc
 
 `ctypeslib` converted libnfc and libfreefare with just enough of the interals to actually be usable.
 
+Install
+-------
 ::
 
     sudo apt install libfreefare-dev
     pip install pynfc
 
+Usage
+-----
 ::
 
     from pynfc import Nfc, Desfire, Timeout
@@ -22,3 +26,12 @@ pynfc
             print(target.uid, target.auth(DESFIRE_DEFAULT_KEY if type(target) == Desfire else MIFARE_BLANK_TOKEN))
         except TimeoutException:
             pass
+
+Develop
+-------
+::
+
+    sudo apt install libfreefare-dev libclang-5.0-dev
+    git clone https://github.com/BarnabyShearer/pynfc.git
+    cd pynfc
+    python3 setup.py develop --user
