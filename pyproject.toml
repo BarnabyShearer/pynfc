@@ -18,14 +18,14 @@ max-complexity = 10
 
 [tool.coverage.run]
 branch = true
-command_line = "-m pytest -v"
+command_line = "-m pytest"
 omit = [".tox/*"]
 
 [tool.coverage.report]
 show_missing = true
 
 [tool.pytest.ini_options]
-addopts = "-p no:cacheprovider"
+addopts = "-p no:cacheprovider --doctest-modules -v"
 
 [tool.tox]
 legacy_tox_ini = """
