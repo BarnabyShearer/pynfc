@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools", "wheel", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+
+[tool.mypy]
+strict = true
+mypy_path = "$MYPY_CONFIG_FILE_DIR/types"
+
+[tool.isort]
+profile = "black"
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = "D202,D403,E203"
+max-complexity = 10
+
+[tool.coverage.run]
+branch = true
+command_line = "-m pytest -v"
+omit = [".tox/*"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.pytest.ini_options]
+addopts = "-p no:cacheprovider"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = True
+envlist = py27,py3{7,8,9,10}
+
+[gh-actions]
+python =
+    2.7: py27
+    3.7: py37
+    3.8: py38
+    3.9: py39
+    3.10: py310
+
+[testenv]
+deps =
+    mypy[python2]
+    black
+    isort
+    pytest
+    coverage
+    pep8-naming
+    flake8-docstrings
+    pyproject-flake8
+commands =
+    black --check --diff .
+    isort --check --diff .
+    mypy .
+    pflake8 .
+    coverage run
+    coverage report --fail-under=100
+
+[testenv:py27]
+deps =
+    mock
+    pytest
+    coverage[toml]
+commands =
+    coverage run
+    coverage report --fail-under=100
+
+"""
