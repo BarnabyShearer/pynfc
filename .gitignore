@@ -1,7 +1,9 @@
+
 *.py[oc]
-/pynfc/nfc.py
 /build
 /dist
 *.egg-info
 /.cache
-/.eggs
+docs/_build/
+.coverage
+.tox
