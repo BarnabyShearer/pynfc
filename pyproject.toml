@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel", "setuptools_scm"]
+requires = ["setuptools", "wheel", "setuptools_scm", "ctypeslib2"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
@@ -30,7 +30,7 @@ addopts = "-p no:cacheprovider --doctest-modules -v"
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-isolated_build = True
+isolated_build = true
 envlist = py27,py3{7,8,9,10}
 
 [gh-actions]
