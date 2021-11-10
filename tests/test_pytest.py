@@ -15,4 +15,4 @@ def test_pynfc():
     """Check we can initialize."""
     with pytest.raises(Exception) as e:
         pynfc.Nfc("pn532_uart:/dev/ttyFake:115200")
-    assert str(e) == '<ExceptionInfo Exception("Couldn\'t nfc_open (comms?)") tblen=2>'
+    assert "nfc_open" in str(e)

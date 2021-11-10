@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel", "setuptools_scm", "ctypeslib2"]
+requires = ["setuptools", "wheel", "setuptools_scm", "ctypeslib2 ; python_version > '3'"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
@@ -60,11 +60,16 @@ commands =
     coverage report --fail-under=100
 
 [testenv:py27]
+skipsdist = True
+skip_install = True
 deps =
     mock
     pytest
     coverage[toml]
 commands =
+    pip3 install build
+    python3 -m build
+    bash -c "python2 -m pip install dist/*.whl"
     coverage run
     coverage report --fail-under=100
 
