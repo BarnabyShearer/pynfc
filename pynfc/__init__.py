@@ -5,7 +5,7 @@ import os
 import threading
 from typing import Any, Callable, Iterator, Optional, Tuple, TypeVar
 
-from . import nfc  # type: ignore
+from . import nfc
 
 try:
     import queue
@@ -96,7 +96,7 @@ class Nfc(object):
         for i, (nmt, nbr) in enumerate(modulations):
             _modulations[i].nmt = nmt
             _modulations[i].nbr = nbr
-        target = nfc.nfc_target()
+        target = nfc.nfc_target()  # type: ignore
         while True:
             numdev = poll(
                 self.pdevice, _modulations, len(_modulations), times, delay, target
@@ -176,7 +176,7 @@ class Mifare(Target):
         if classic_connect(self.target) != 0:
             return False
         block = nfc.mifare_classic_sector_last_block(sector)
-        auth_tag = nfc.mifare_classic_tag.from_buffer_copy(data)
+        auth_tag = nfc.mifare_classic_tag.from_buffer_copy(data)  # type: ignore
         if akey:
             ret = int(
                 classic_auth(
