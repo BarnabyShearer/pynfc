@@ -1,9 +1,6 @@
 # type:ignore
 """Setup custom build step."""
 
-from ctypeslib.codegen import clangparser, config, typedesc
-from ctypeslib.codegen.codegenerator import Generator
-from ctypeslib.library import Library
 from setuptools import setup
 from setuptools.command.build_py import build_py
 
@@ -13,6 +10,10 @@ class Build(build_py):
 
     def run(self):
         """Use ctypelib2 to convert to python."""
+        from ctypeslib.codegen import clangparser, config, typedesc
+        from ctypeslib.codegen.codegenerator import Generator
+        from ctypeslib.library import Library
+
         parser = clangparser.Clang_Parser(())
         parser.parse("pynfc/nfc.c")
         items = parser.get_result()
