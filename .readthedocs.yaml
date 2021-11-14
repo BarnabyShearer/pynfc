@@ -1,5 +1,9 @@
 version: 2
 formats: all
+build:
+  apt_packages:
+  - libclang-dev
+  - libfreefare-dev
 python:
   install:
   - requirements: docs/requirements.txt
