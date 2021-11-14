@@ -2,7 +2,7 @@
 pynfc
 =====
 .. image:: https://readthedocs.org/projects/pynfc/badge/?version=latest
-    :target: http://pynfc.readthedocs.io/en/latest/?badge=latest
+    :target: https://pynfc.readthedocs.io/en/latest/?badge=latest
 
 .. image:: https://badge.fury.io/py/pynfc.svg
     :target: https://badge.fury.io/py/pynfc
