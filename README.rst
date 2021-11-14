@@ -1,7 +1,13 @@
+=====
 pynfc
 =====
+.. image:: https://readthedocs.org/projects/pynfc/badge/?version=latest
+    :target: http://pynfc.readthedocs.io/en/latest/?badge=latest
 
-`ctypeslib` converted libnfc and libfreefare with just enough of the interals to actually be usable.
+.. image:: https://badge.fury.io/py/pynfc.svg
+    :target: https://badge.fury.io/py/pynfc
+
+`ctypeslib` converted libnfc and libfreefare.
 
 Install
 -------
@@ -35,3 +41,6 @@ Develop
     git clone https://github.com/BarnabyShearer/pynfc.git
     cd pynfc
     python3 setup.py develop --user
+
+
+
