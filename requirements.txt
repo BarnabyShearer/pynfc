@@ -1,4 +1,0 @@
-clang==5.*
-ctypeslib2
-pytest
-
