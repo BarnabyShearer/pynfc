@@ -2,7 +2,8 @@ version: 2
 formats: all
 build:
   os: ubuntu-20.04
-  python: 3
+  tools:
+    python: 3
   apt_packages:
   - libclang-dev
   - libfreefare-dev
