@@ -2,6 +2,7 @@ version: 2
 formats: all
 build:
   apt_packages:
+  - build-essential
   - libclang-dev
   - libfreefare-dev
 python:
