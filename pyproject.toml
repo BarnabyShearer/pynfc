@@ -25,7 +25,7 @@ omit = [".tox/*"]
 show_missing = true
 
 [tool.pytest.ini_options]
-addopts = "-p no:cacheprovider --doctest-modules -v"
+addopts = "-p no:cacheprovider --doctest-modules -v tests"
 
 [tool.tox]
 legacy_tox_ini = """
