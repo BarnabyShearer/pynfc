@@ -11,9 +11,10 @@ pynfc
 
 Install
 -------
+
 ::
 
-    sudo apt install libfreefare-dev
+    sudo apt install libclang-dev libfreefare-dev
     pip install pynfc
 
 Usage
@@ -41,6 +42,4 @@ Develop
     git clone https://github.com/BarnabyShearer/pynfc.git
     cd pynfc
     python3 setup.py develop --user
-
-
 
