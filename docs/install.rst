@@ -3,6 +3,6 @@ Installation
 
 ::
 
-    sudo apt install libfreefare-dev
+    sudo apt install libclang-dev libfreefare-dev
     pip install pynfc
 
