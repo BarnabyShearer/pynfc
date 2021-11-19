@@ -15,7 +15,7 @@ Install
 ::
 
     sudo apt install libclang-dev libfreefare-dev
-    pip install pynfc
+    python3 -m pip install pynfc
 
 Usage
 -----
