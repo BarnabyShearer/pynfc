@@ -2,17 +2,16 @@
 pynfc
 =====
 .. image:: https://readthedocs.org/projects/pynfc/badge/?version=latest
-    :target: https://pynfc.readthedocs.io/en/latest/?badge=latest
-
-.. image:: https://badge.fury.io/py/pynfc.svg
-    :target: https://badge.fury.io/py/pynfc
+    :target: https://pynfc.readthedocs.io/en/latest/
+.. image:: https://img.shields.io/pypi/v/pynfc?color=success
+    :target: https://pypi.org/project/pynfc
 
 `ctypeslib` converted libnfc and libfreefare.
 
 Install
 -------
 
-::
+.. code-block:: bash
 
     sudo apt install libclang-dev libfreefare-dev
     python3 -m pip install pynfc
