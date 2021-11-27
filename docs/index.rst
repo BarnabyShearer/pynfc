@@ -5,7 +5,8 @@ pynfc
 
 Usage
 -----
-::
+
+.. code-block:: python
 
     from pynfc import Nfc, Desfire, Timeout
     
@@ -22,7 +23,8 @@ Usage
 
 Develop
 -------
-::
+
+.. code-block:: bash
 
     sudo apt install libfreefare-dev libclang-5.0-dev
     git clone https://github.com/BarnabyShearer/pynfc.git
