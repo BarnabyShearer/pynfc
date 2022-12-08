@@ -16,7 +16,7 @@ jobs:
         python-version: '3.x'
     - run: pip install build
     - run: python -m build
-    - uses: pypa/gh-action-pypi-publish@v1.5.0
+    - uses: pypa/gh-action-pypi-publish@v1.6.4
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
